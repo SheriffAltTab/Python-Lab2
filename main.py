@@ -8,7 +8,7 @@ driver_races = ['Білий', 'Чорний']
 stop_dates = [f'2023-{random.randint(1, 12):02d}-{random.randint(1, 28):02d}' for _ in range(n)]
 stop_times = [f'{random.randint(0, 23):02d}:{random.randint(0, 59):02d}' for _ in range(n)]
 drugs_related_stop = [random.choice([True, False]) for _ in range(n)]
-violation_raw = ['Перевищення швидкості', 'Володіння наркотиками', 'Порушення сигналізації', 'Алкогольне сп`яніння', 'Інше']
+violation_raw = ['Перевищення швидкості', 'Зберігання наркотиків', 'Порушення сигналізації', 'Алкогольне сп`яніння', 'Інше']
 stop_durations = [f'{random.randint(1, 60)} хв' for _ in range(n)]
 
 data = pd.DataFrame({
@@ -28,17 +28,19 @@ data = pd.read_csv('police_project.csv')
 
 # 1. Перевірте, білих чи темношкірих людей частіше зупиняє поліція.
 race_counts = data['driver_race'].value_counts()
-race_counts.plot(kind='bar')
+plt.figure(figsize=(8, 6))
+race_counts.plot(kind='bar',color=['blue', 'red'])
 plt.title('Частота зупинок за расою')
 plt.xlabel('Раса')
 plt.ylabel('Кількість зупинок')
+plt.xticks(rotation=0)  # Змінюємо орієнтацію підписів на осі x
 plt.show()
 
 # 2. З’ясуйте, як часто зупинки через наркотики залежать від часу доби.
 data['stop_datetime'] = pd.to_datetime(data['stop_date'] + ' ' + data['stop_time'])
 data['hour'] = data['stop_datetime'].dt.hour
 drug_stops_by_hour = data[data['drugs_related_stop'] == True]['hour'].value_counts().sort_index()
-drug_stops_by_hour.plot(kind='line')
+drug_stops_by_hour.plot(kind='line', color=['red'])
 plt.title('Зупинки через наркотики за годинами')
 plt.xlabel('Година доби')
 plt.ylabel('Кількість зупинок')
@@ -58,9 +60,9 @@ data['stop_duration'] = data['stop_duration'].apply(lambda x: pd.to_numeric(x.sp
 
 # 5. Визначте середній час зупинки для кожної з причин зупинки (violation_raw).
 mean_stop_duration_by_violation = data.groupby('violation_raw')['stop_duration'].mean()
-mean_stop_duration_by_violation.plot(kind='bar', figsize=(10, 6))
+mean_stop_duration_by_violation.plot(kind='bar', color=['blue', 'red', 'yellow', 'green', 'purple'], figsize=(12, 6))
 plt.title('Середній час зупинки за причиною')
 plt.xlabel('Причина зупинки')
 plt.ylabel('Середній час зупинки (хв)')
-plt.xticks(rotation=90)
+plt.xticks(rotation=0)
 plt.show()
